@@ -53,7 +53,7 @@ class NewRiverView(TemplateView):
         riverRoute = GEOSGeometry(json.dumps(json.loads(request.POST['riverRoute'])['geometry']))
         riverGetIn = GEOSGeometry(json.dumps(json.loads(request.POST['riverGetIn'])['geometry']))
         riverGetOut = GEOSGeometry(json.dumps(json.loads(request.POST['riverGetOut'])['geometry']))
-        river = River.objects.create(river_name=request.POST['riverName'], river_description=request.POST['riverDesc'], route=riverRoute, get_in=riverGetIn, get_out=riverGetOut)
+        river = River.objects.create(river_name=request.POST['riverName'], river_description=request.POST['riverDesc'], route=riverRoute, get_in=riverGetIn, get_out=riverGetOut, grade=request.POST['riverGrade'])
         return redirect('/river/%s'%river.id)
 
 class NoteDeleteView(DeleteView):
