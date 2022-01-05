@@ -105,11 +105,33 @@
 				map = new mapboxgl.Map({
 					container: 'mapContainerDrawGetIn', // container ID
 					style: 'mapbox://styles/mapbox/outdoors-v11', // style URL
-					center: [-2.3, 52.6], // starting position focus on get in
-					zoom: 6 // starting zoom
+					center: JSON.parse(($('#riverRoute').val())).geometry.coordinates[0], // starting position focus on get in
+					zoom: 11 // starting zoom
 				});
 				
 				map.addControl(PointDraw, 'top-left');
+
+				map.on('load', () => {
+					// Add a data source containing GeoJSON data.
+					map.addSource('rivers', {
+						'type': 'geojson',
+						'data': JSON.parse($('#riverRoute').val())
+					});
+		
+					map.addLayer({
+						'id': 'riverRouteLayer',
+						'type': 'line',
+						'source': 'rivers',
+						'layout': {
+							'line-join': 'round',
+							'line-cap': 'round'
+						},
+						'paint': {
+							'line-color': '#3477eb',
+							'line-width': 3
+						}
+					});
+				});
 			}
 
 			if (n == 3) {
@@ -117,46 +139,117 @@
 				map = new mapboxgl.Map({
 					container: 'mapContainerDrawGetOut', // container ID
 					style: 'mapbox://styles/mapbox/outdoors-v11', // style URL
-					center: [-2.3, 52.6], // starting position focus on get in
-					zoom: 6 // starting zoom
+					center: JSON.parse(($('#riverRoute').val())).geometry.coordinates.slice(-1)[0], // starting position focus on get in
+					zoom: 11 // starting zoom
 				});
 				
 				map.addControl(PointDraw, 'top-left');
+
+				map.on('load', () => {
+					// Add a data source containing GeoJSON data.
+					map.addSource('rivers', {
+						'type': 'geojson',
+						'data': JSON.parse($('#riverRoute').val())
+					});
+		
+					map.addLayer({
+						'id': 'riverRouteLayer',
+						'type': 'line',
+						'source': 'rivers',
+						'layout': {
+							'line-join': 'round',
+							'line-cap': 'round'
+						},
+						'paint': {
+							'line-color': '#3477eb',
+							'line-width': 3
+						}
+					});
+					
+					const getInMarker = new mapboxgl.Marker({color: '#30cf45'})
+					.setLngLat(JSON.parse($('#riverGetIn').val()).geometry.coordinates)
+					.addTo(map);
+				});
 			}
 
 
 		}
 		
 		function nextPrev(n) {
+
+			var dontContinue = false
 			// This function will figure out which tab to display
 			var x = document.getElementsByClassName("tab");
-			// Hide the current tab:
-			x[currentTab].style.display = "none";
 			// Increase or decrease the current tab by 1:
 			
+			if (currentTab == 0) {
+				var forms = document.querySelectorAll('.needs-validation')
+
+				// Loop over them and prevent submission
+				Array.prototype.slice.call(forms)
+					.forEach(function (form) {
+						console.log(form.checkValidity())
+						if (form.checkValidity() == false) {
+							console.log('False')
+							dontContinue = true
+							event.preventDefault()
+							event.stopPropagation()
+						}
+
+					form.classList.add('was-validated')
+					})
+			}
+
 			if (currentTab == 1) {
+				if (LineDraw.getAll().features.length > 1) {
+					dontContinue = true
+					alert('Only draw one route')
+					return
+				} 
+				if (LineDraw.getAll().features[0].geometry.coordinates.length < 2) {
+					dontContinue = true
+					alert('The route needs more points')
+					return
+				} 
+				
 				$('#riverRoute').val(JSON.stringify(LineDraw.getAll().features[0]))
 				map.remove()
 			}
 			if (currentTab == 2) {
+				if (PointDraw.getAll().features[0].geometry.coordinates.length < 1) {
+					dontContinue = true
+					alert('You must mark the get in')
+					return
+				} 
 				$('#riverGetIn').val(JSON.stringify(PointDraw.getAll().features[0]))
 				map.remove()
 			}
 			
 			if (currentTab == 3) {
+				if (PointDraw.getAll().features[0].geometry.coordinates.length < 1) {
+					dontContinue = true
+					alert('You must mark the get in')
+					return
+				} 
 				$('#riverGetOut').val(JSON.stringify(PointDraw.getAll().features[0]))
 				map.remove()
 			}
 
-			currentTab = currentTab + n;
-			// if you have reached the end of the form... :
-			if (currentTab >= x.length) {
-			//...the form gets submitted:
-			document.getElementById("newRiverForm").submit();
-			return false;
+			if (!dontContinue) {
+				// Hide the current tab:
+				x[currentTab].style.display = "none";
+
+				currentTab = currentTab + n;
+				// if you have reached the end of the form... :
+				if (currentTab >= x.length) {
+				//...the form gets submitted:
+				document.getElementById("newRiverForm").submit();
+				return false;
+				}
+				// Otherwise, display the correct tab:
+				showTab(currentTab);
 			}
-			// Otherwise, display the correct tab:
-			showTab(currentTab);
+
 		}
 
 	</script>
@@ -172,19 +265,28 @@
 							<h4>Create new river</h4>
 						</div>
 						<div class="card-body">
-							<form method="POST" id="newRiverForm">
+							<form method="POST" id="newRiverForm" class="needs-validation">
 								{% csrf_token %}
 								<div class="mb-3">
 									<label for="riverName" class="form-label">River Name</label>
-									<input class="form-control" id="riverName" name="riverName">
+									<input class="form-control" id="riverName" name="riverName" required>
+									<div class="invalid-feedback">
+										River name is required
+									</div>
 								</div>
 								<div class="mb-3">
 									<label for="riverDesc" class="form-label">River Description</label>
-									<textarea class="form-control" id="riverDesc" name="riverDesc" rows="4"></textarea>
+									<textarea class="form-control" id="riverDesc" name="riverDesc" rows="4" required></textarea>
+									<div class="invalid-feedback">
+										River description is required
+									</div>
 								</div>
 								<div class="mb-3">
 									<label for="riverGrade" class="form-label">River Grade</label>
-									<input class="form-control" id="riverGrade" name="riverGrade">
+									<input class="form-control" id="riverGrade" name="riverGrade" required>
+									<div class="invalid-feedback">
+										River grade is required
+									</div>
 								</div>
 								<input hidden name="riverRoute" id="riverRoute">
 								<input hidden name="riverGetIn" id="riverGetIn">

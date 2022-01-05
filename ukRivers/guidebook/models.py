@@ -10,6 +10,9 @@ class River(models.Model):
     route = geoModels.LineStringField(null=True, blank=True)
     get_in = geoModels.PointField(null=True, blank=True)
     get_out = geoModels.PointField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.river_name
 
 class Note(models.Model):
     river = models.ForeignKey(River, on_delete=models.CASCADE)
