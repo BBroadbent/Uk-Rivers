@@ -34,7 +34,7 @@ class RiverView(TemplateView):
 
         if self.request.user.is_authenticated:
             context['notes'] = self.request.user.note_set.filter(river=river)
-            context['publicComments'] = self.request.user.publiccomment_set.filter(river=river)
+        context['publicComments'] = PublicComment.objects.filter(river=river)
 
         return context
     def post(self, request, *args, **kwargs):
