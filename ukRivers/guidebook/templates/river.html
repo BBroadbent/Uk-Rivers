@@ -77,7 +77,13 @@
                     
                     {% else %}
                         <div class="card-body">
-                            <h5 class="card-text">No notes yet</h5>
+                            <h5 class="card-text">
+                                {% if user.is_authenticated %}
+                                No notes yet
+                                {% else %}
+                                Please sign in here
+                                {% endif %}
+                            </h5>
                         </div>
                     {% endif %}
                 </div>
