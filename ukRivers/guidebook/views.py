@@ -19,6 +19,7 @@ class HomeView(TemplateView):
             riverRoutes.append(riverRouteFeature)
 
         context['riverFeatureCollection'] = dumps(FeatureCollection(riverRoutes))
+        context['rivers'] = rivers.order_by('river_name')
         return context
 
 class RiverView(TemplateView):

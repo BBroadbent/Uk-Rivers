@@ -49,9 +49,20 @@
 				<a class="btn btn-primary btn-lg" type="button" href="/river/new/"> Create new river</a>
 			</div>
 		</div>
-		<div class="row">
-			<div class="map-wrapper">
+		<div class="row mx-0">
+			<div class="map-wrapper px-0">
 				<div id="map"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<ul>
+				{% for river in rivers %}
+					<li>
+						<a href="/river/{{river.id}}">{{river.river_name}} ({{river.grade}})</a>
+					</li>
+				{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>

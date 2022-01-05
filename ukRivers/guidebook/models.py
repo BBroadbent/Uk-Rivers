@@ -6,6 +6,7 @@ from django.contrib.gis.db import models as geoModels
 
 class River(models.Model):
     river_name = models.CharField(max_length=50,null=True, blank=True)
+    grade = models.CharField(max_length=50,null=True, blank=True)
     river_description = models.TextField(null=True, blank=True)
     route = geoModels.LineStringField(null=True, blank=True)
     get_in = geoModels.PointField(null=True, blank=True)
