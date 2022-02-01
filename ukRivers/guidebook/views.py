@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, DeleteView
 from guidebook.models import *
 from geojson import Feature, Point, FeatureCollection, LineString, dumps, loads
 from django.contrib.gis.geos import GEOSGeometry
+from geojson_length import calculate_distance, Unit
 import json
 # Create your views here.
 
@@ -31,6 +32,7 @@ class RiverView(TemplateView):
         context['riverRoute'] = Feature(geometry=LineString(river.route), properties={"riverName": river.river_name, 'riverID': river.id})
         context['riverGetIn'] = Point(river.get_in)
         context['riverGetOut'] = Point(river.get_out)
+        context['riverLength'] = round(calculate_distance(context['riverRoute'], Unit.meters)/1000,1)
         context['river'] = river
 
         if self.request.user.is_authenticated:
