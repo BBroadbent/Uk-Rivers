@@ -4,7 +4,8 @@ from guidebook.models import *
 from geojson import Feature, Point, FeatureCollection, LineString, dumps, loads
 from django.contrib.gis.geos import GEOSGeometry
 from geojson_length import calculate_distance, Unit
-import json
+import json, datetime
+import requests
 # Create your views here.
 
 class HomeView(TemplateView):
@@ -34,6 +35,16 @@ class RiverView(TemplateView):
         context['riverGetOut'] = Point(river.get_out)
         context['riverLength'] = round(calculate_distance(context['riverRoute'], Unit.meters)/1000,1)
         context['river'] = river
+
+        # This request gets the levels to draw the graph 
+        url = "http://environment.data.gov.uk/flood-monitoring/id/stations/%s/readings?since=%s"%(river.gauge_measure_id, (datetime.datetime.now()-datetime.timedelta(days=3)).strftime('%Y-%m-%d'))
+        response = requests.request("GET", url)
+        context['riverLevels'] = response.json()['items']
+
+        # This request gets the details like river name, max min levels etc.
+        url = "http://environment.data.gov.uk/flood-monitoring/id/stations/%s"%(river.gauge_measure_id,)
+        response = requests.request("GET", url)
+        context['riverLevelDetails'] = response.json()['items']
 
         if self.request.user.is_authenticated:
             context['notes'] = self.request.user.note_set.filter(river=river)
