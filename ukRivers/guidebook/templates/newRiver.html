@@ -288,6 +288,10 @@
 										River grade is required
 									</div>
 								</div>
+								<div class="mb-3">
+									<label for="riverGauge" class="form-label">Gauge ID (from EA url)</label>
+									<input class="form-control" id="riverGauge" name="riverGauge" type="number">
+								</div>
 								<input hidden name="riverRoute" id="riverRoute">
 								<input hidden name="riverGetIn" id="riverGetIn">
 								<input hidden name="riverGetOut" id="riverGetOut">
@@ -299,6 +303,12 @@
 			<div class="tab">
 				<div class="col-lg">
 					<h2>Draw route</h2>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/satellite-v9')">
+						Show satellite
+					</button>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/outdoors-v11')">
+						Show normal
+					</button>
 					<div class="map-wrapper">
 						<div id="mapContainerDrawRoute" class="mapContainer"></div>
 					</div>
@@ -307,6 +317,12 @@
 			<div class="tab">
 				<div class="col-lg">
 					<h2>Mark get in</h2>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/satellite-v9')">
+						Show satellite
+					</button>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/outdoors-v11')">
+						Show normal
+					</button>
 					<div class="map-wrapper">
 						<div id="mapContainerDrawGetIn" class="mapContainer"></div>
 					</div>
@@ -315,6 +331,12 @@
 			<div class="tab">
 				<div class="col-lg">
 					<h2>Mark get out</h2>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/satellite-v9')">
+						Show satellite
+					</button>
+					<button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/outdoors-v11')">
+						Show normal
+					</button>
 					<div class="map-wrapper">
 						<div id="mapContainerDrawGetOut" class="mapContainer"></div>
 					</div>

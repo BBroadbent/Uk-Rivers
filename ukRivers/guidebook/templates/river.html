@@ -39,11 +39,12 @@
                 </div>
             </div>
         </div>
+        {% if riverLevels %}
         <div class="row mb-2">
             <div class="col">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Levels</h4>
+                        <h4>Levels at <b>{{riverLevelDetails.label}}</b></h4>
                     </div>
                     <div class="card-body">
                         <canvas id="line-chart"></canvas>
@@ -52,6 +53,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="row mb-2">
             <div class="col-lg">
                 <div class="card">
@@ -119,6 +121,42 @@
                 </div>
             </div>
         </div>
+        
+        <div class="row mb-2">
+            <div class="col-lg">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Relevant locations</h4>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled>
+                            New location
+                        </button>
+                    </div>
+                    {% if river.place_set %}
+                        <div class="card-body" style="max-height: 70vh;overflow-y: scroll;">
+                            <table class="table">
+                                <tr>
+                                    <th>Location type</th>
+                                    <th>Description</th>
+                                    <th>Map</th>
+                                </tr>
+                            {% for place in river.place_set.all %}
+                                <tr>
+                                    <td>{{place.get_place_type_display}}</td>
+                                    <td>{{place.description}}</td>
+                                    <td><a href="https://maps.google.com/?q={{place.location.coords.1}},{{place.location.coords.0}}" target="__blank">Map</a></td>
+                                </tr>    
+                            {% endfor %}
+                            </table>
+                        </div>
+                    {% else %}
+                    <div class="card-body">
+                        <h5 class="card-text">No public comments yet</h5>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -176,32 +214,34 @@
     <script>
         riverLevels = JSON.parse(document.getElementById('riverLevels').textContent);
 
-        riverLevels.sort(function(a, b) {
-            return moment(a.dateTime) - moment(b.dateTime);
-          });
-
-        Date.prototype.toHumanTime = function() {
-            var mm = this.getMonth() + 1; // getMonth() is zero-based
-            var dd = this.getDate();
-            var hour = this.getHours();
-            var minute = this.getMinutes();
-          
-            return [hour,':',minute].join('');
-        };
-
-        mappedLabels = riverLevels.map(level => new Date(level.dateTime))
-        var levelData = {
-            labels: mappedLabels,
-            datasets: [{
-                label: 'Levels',
-                data: riverLevels.map(level => level.value),
-                borderColor: 'rgb(50, 141, 168)',
-                backgroundColor: 'rgb(50, 141, 168, 0.1)',
-                pointRadius: 0,
+        if (riverLevels) {
+            riverLevels.sort(function(a, b) {
+                return moment(a.dateTime) - moment(b.dateTime);
+            });
             
-            }]
-        };  
-
+            Date.prototype.toHumanTime = function() {
+                var mm = this.getMonth() + 1; // getMonth() is zero-based
+                var dd = this.getDate();
+                var hour = this.getHours();
+                var minute = this.getMinutes();
+                
+                return [hour,':',minute].join('');
+            };
+            
+            mappedLabels = riverLevels.map(level => new Date(level.dateTime))
+            var levelData = {
+                labels: mappedLabels,
+                datasets: [{
+                    label: 'Levels',
+                    data: riverLevels.map(level => level.value),
+                    borderColor: 'rgb(50, 141, 168)',
+                    backgroundColor: 'rgb(50, 141, 168, 0.1)',
+                    pointRadius: 0,
+                
+                }]
+            };  
+        
+        }
         geojsonRoute = {{riverRoute | safe}}
         geojsonGetIn = {{riverGetIn | safe}}
         geojsonGetOut = {{riverGetOut | safe}}
@@ -234,13 +274,24 @@
                     'line-width': 3
                 }
             });
-            const getInMarker = new mapboxgl.Marker({color: '#30cf45'})
+            {% comment %} const getInMarker = new mapboxgl.Marker({color: '#30cf45'})
                 .setLngLat(geojsonGetIn.coordinates)
                 .addTo(map);
 
             const getOutMarker = new mapboxgl.Marker({color: '#206cb3'})
                 .setLngLat(geojsonGetOut.coordinates)
-                .addTo(map);
+                .addTo(map); {% endcomment %}
+
+            {% for place in river.place_set.all %}
+            const popup{{place.id}} = new mapboxgl.Popup()
+                .setText('{{place.description|default:place.get_place_type_display}}')
+
+
+            const marker{{place.id}} = new mapboxgl.Marker({color: '{{place.place_type|markerToColor}}'})
+                .setLngLat([{{place.location.coords.0}},{{place.location.coords.1}}])
+                .addTo(map)
+                .setPopup(popup{{place.id}});
+            {% endfor %}
         });
 
         $(document).ready(function(){

@@ -21,3 +21,16 @@ def dateString(value, arg=None):
             return format(value, arg)
         except AttributeError:
             return ''
+
+@register.filter
+def markerToColor(value):
+    colorMap = {
+        'put': '#30cf45',
+        'take': '#206cb3',
+        'park': '#FFBD33'
+    }
+    
+    try:
+        return colorMap[value]
+    except:
+        return '#0'

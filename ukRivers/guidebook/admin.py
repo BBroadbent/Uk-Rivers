@@ -5,3 +5,4 @@ from guidebook.models import *
 admin.site.register(River)
 admin.site.register(Note)
 admin.site.register(PublicComment)
+admin.site.register(Place)
