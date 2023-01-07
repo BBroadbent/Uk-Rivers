@@ -85,8 +85,8 @@ WSGI_APPLICATION = 'ukRivers.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'ukRivers',
-        'USER': 'postgis_user',
+        'NAME': 'ukRiver',
+        'USER': 'ukRiverUser',
         'PASSWORD': 'dQBA3n9vAaz9g5eFW4Fn',
         'HOST': 'localhost',
         'PORT': '5432'
