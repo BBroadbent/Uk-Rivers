@@ -34,3 +34,7 @@ def markerToColor(value):
         return colorMap[value]
     except:
         return '#0'
+
+@register.filter
+def getMidpoint(extents):
+    return f'[{(extents[0]+extents[2])/2}, {(extents[1]+extents[3])/2}]'

@@ -23,4 +23,5 @@ urlpatterns = [
     path('river/new/', NewRiverView.as_view(), name='river'),
     path('note/<pk>/delete/', NoteDeleteView.as_view()),
     path('comment/<pk>/delete/', CommentDeleteView.as_view()),
+    path('place/<int:riverID>/new/', PlaceCreateView.as_view(), name="new-place"),
 ]

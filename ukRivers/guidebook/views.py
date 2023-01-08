@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView, DeleteView
+from django.views.generic import TemplateView, DeleteView, CreateView
 from guidebook.models import *
 from geojson import Feature, Point, FeatureCollection, LineString, dumps, loads
 from django.contrib.gis.geos import GEOSGeometry
 from geojson_length import calculate_distance, Unit
 import json, datetime
 import requests
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+
 # Create your views here.
 
 class HomeView(TemplateView):
@@ -60,7 +63,7 @@ class RiverView(TemplateView):
         
         return redirect(request.path)
 
-class NewRiverView(TemplateView):
+class NewRiverView(LoginRequiredMixin, TemplateView):
     template_name = "newRiver.html"
 
     def post(self, request, *args, **kwargs):
@@ -85,10 +88,39 @@ class NewRiverView(TemplateView):
 
         return redirect('/river/%s'%river.id)
 
-class NoteDeleteView(DeleteView):
+class NoteDeleteView(LoginRequiredMixin, DeleteView):
     model = Note
     success_url = '/river/{river_id}'
 
-class CommentDeleteView(DeleteView):
+    def form_valid(self, form):
+        if self.object.user == self.request.user:
+            return super().form_valid(form)
+        else:
+            raise PermissionDenied()
+
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
     model = PublicComment
     success_url = '/river/{river_id}'
+    
+    def form_valid(self, form):
+        if self.object.user == self.request.user:
+            return super().form_valid(form)
+        else:
+            raise PermissionDenied()
+
+class PlaceCreateView(LoginRequiredMixin, CreateView):
+    model = Place
+    success_url = '/river/{river_id}'
+    fields = ['description', 'place_type']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        river = River.objects.get(id=self.kwargs['riverID'])
+        context['river'] = river
+        return context
+
+    def form_valid(self, form):
+        form.instance.created_by_user = self.request.user
+        form.instance.river = River.objects.get(id=self.kwargs['riverID'])
+        form.instance.location = GEOSGeometry(json.dumps(json.loads(form.data['location'])['geometry']))
+        return super().form_valid(form)
