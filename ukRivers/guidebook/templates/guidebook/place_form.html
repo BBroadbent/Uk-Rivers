@@ -79,13 +79,13 @@
 {% endblock styles %}
 {% block maincontent %}
 <div class="container">
+    <button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/satellite-v9')">
+        Show satellite
+    </button>
+    <button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/outdoors-v11')">
+        Show normal
+    </button>
     <form method="post">
-        <button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/satellite-v9')">
-            Show satellite
-        </button>
-        <button class="btn btn-sm btn-secondary" onClick="map.setStyle('mapbox://styles/mapbox/outdoors-v11')">
-            Show normal
-        </button>
         <div class="map-wrapper">
             <div id="mapContainer" class="mapContainer"></div>
         </div>
