@@ -18,7 +18,7 @@ from django.urls import path
 from guidebook.views import *
 
 urlpatterns = [
-    path('', HomeView.as_view()),
+    path('', HomeView.as_view(), name="home"),
     path('river/<int:riverID>/', RiverView.as_view()),
     path('river/new/', NewRiverView.as_view(), name='river'),
     path('note/<pk>/delete/', NoteDeleteView.as_view()),

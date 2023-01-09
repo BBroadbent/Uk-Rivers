@@ -51,6 +51,9 @@
 				<p class="col-md-8 fs-4">An online guidebook for UK rivers where you can log paddles and take notes on rivers.</p>
 				{% if user.is_authenticated %}
 				<a class="btn btn-primary btn-lg" type="button" href="/river/new/"> Create new river</a>
+				{% else %}
+				<a class="btn btn-primary btn-lg" type="button" href="{% url 'account_login' %}"> Login</a>
+				<a class="btn btn-primary btn-lg" type="button" href="{% url 'account_signup' %}"> Sign up</a>
 				{% endif %}
 			</div>
 		</div>

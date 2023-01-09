@@ -43,5 +43,11 @@
           </div>
         </div>
     </nav>
-    {% block content %}{% endblock content %}
+    {% block maincontent %}
+    <div class="container card mt-3">
+      <div class="card-body">
+          {% block content %}{% endblock content %}
+      </div>
+  </div>
+  {% endblock maincontent %}
 </body>
